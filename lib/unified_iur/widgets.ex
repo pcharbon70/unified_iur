@@ -18,6 +18,13 @@ defmodule UnifiedIUR.Widgets do
   * `LineChart` - Display time series or sequential data
   * `Column` - Table column definition (nested within Table)
   * `Table` - Display tabular data with rows and columns
+  * `MenuItem` - Single selectable menu entry
+  * `Menu` - Menu container with menu items
+  * `ContextMenu` - Context-triggered menu container
+  * `Tab` - Single tab descriptor with optional content
+  * `Tabs` - Tabs container for switching content
+  * `TreeNode` - Node in a hierarchical tree
+  * `TreeView` - Hierarchical tree container
 
   ## Common Fields
 
@@ -237,7 +244,18 @@ defmodule UnifiedIUR.Widgets do
 
     @type color_zone :: [{integer(), atom()}]
 
-    defstruct [:id, :value, :min, :max, :label, :width, :height, :color_zones, style: nil, visible: true]
+    defstruct [
+      :id,
+      :value,
+      :min,
+      :max,
+      :label,
+      :width,
+      :height,
+      :color_zones,
+      style: nil,
+      visible: true
+    ]
 
     @type t :: %__MODULE__{
             id: atom(),
@@ -275,7 +293,17 @@ defmodule UnifiedIUR.Widgets do
         %Sparkline{id: :cpu_trend, data: [10, 25, 20, 35, 30], ...}
     """
 
-    defstruct [:id, :data, :width, :height, :color, show_dots: false, show_area: false, style: nil, visible: true]
+    defstruct [
+      :id,
+      :data,
+      :width,
+      :height,
+      :color,
+      show_dots: false,
+      show_area: false,
+      style: nil,
+      visible: true
+    ]
 
     @type t :: %__MODULE__{
             id: atom(),
@@ -314,7 +342,16 @@ defmodule UnifiedIUR.Widgets do
     @type orientation :: :horizontal | :vertical
     @type data_point :: {String.t(), integer()}
 
-    defstruct [:id, :data, :width, :height, orientation: :horizontal, show_labels: true, style: nil, visible: true]
+    defstruct [
+      :id,
+      :data,
+      :width,
+      :height,
+      orientation: :horizontal,
+      show_labels: true,
+      style: nil,
+      visible: true
+    ]
 
     @type t :: %__MODULE__{
             id: atom(),
@@ -351,7 +388,16 @@ defmodule UnifiedIUR.Widgets do
 
     @type data_point :: {String.t(), integer()}
 
-    defstruct [:id, :data, :width, :height, show_dots: true, show_area: false, style: nil, visible: true]
+    defstruct [
+      :id,
+      :data,
+      :width,
+      :height,
+      show_dots: true,
+      show_area: false,
+      style: nil,
+      visible: true
+    ]
 
     @type t :: %__MODULE__{
             id: atom(),
@@ -491,6 +537,194 @@ defmodule UnifiedIUR.Widgets do
             sort_direction: :asc | :desc,
             style: UnifiedIUR.Style.t() | nil,
             visible: boolean()
+          }
+  end
+
+  defmodule MenuItem do
+    @moduledoc """
+    Menu item widget for menu and context menu entries.
+    """
+
+    @type signal :: atom() | {atom(), map()} | {atom(), atom(), list()}
+
+    defstruct [
+      :label,
+      :id,
+      :action,
+      :submenu,
+      :icon,
+      :shortcut,
+      disabled: false,
+      visible: true
+    ]
+
+    @type t :: %__MODULE__{
+            label: String.t() | nil,
+            id: atom() | nil,
+            action: signal() | nil,
+            disabled: boolean(),
+            submenu: [t()] | nil,
+            icon: atom() | nil,
+            shortcut: String.t() | nil,
+            visible: boolean()
+          }
+  end
+
+  defmodule Menu do
+    @moduledoc """
+    Menu widget for organizing menu items.
+    """
+
+    @type position :: :top | :bottom | :left | :right
+
+    defstruct [:id, :title, :position, :items, :style, visible: true]
+
+    @type t :: %__MODULE__{
+            id: atom() | nil,
+            title: String.t() | nil,
+            position: position() | nil,
+            items: [MenuItem.t()] | nil,
+            style: UnifiedIUR.Style.t() | nil,
+            visible: boolean()
+          }
+  end
+
+  defmodule ContextMenu do
+    @moduledoc """
+    Context menu widget shown by trigger gestures.
+    """
+
+    @type trigger :: :right_click | :long_press | :double_click
+
+    defstruct [:id, :trigger_on, :items, :style, visible: true]
+
+    @type t :: %__MODULE__{
+            id: atom() | nil,
+            trigger_on: trigger() | nil,
+            items: [MenuItem.t()] | nil,
+            style: UnifiedIUR.Style.t() | nil,
+            visible: boolean()
+          }
+  end
+
+  defmodule Tab do
+    @moduledoc """
+    Tab widget describing one tab and its content.
+    """
+
+    defstruct [:id, :label, :icon, :content, disabled: false, closable: false, visible: true]
+
+    @type content ::
+            UnifiedIUR.Widgets.Text.t()
+            | UnifiedIUR.Widgets.Button.t()
+            | UnifiedIUR.Widgets.Label.t()
+            | UnifiedIUR.Widgets.TextInput.t()
+            | UnifiedIUR.Widgets.Gauge.t()
+            | UnifiedIUR.Widgets.Sparkline.t()
+            | UnifiedIUR.Widgets.BarChart.t()
+            | UnifiedIUR.Widgets.LineChart.t()
+            | UnifiedIUR.Widgets.Table.t()
+            | UnifiedIUR.Widgets.Menu.t()
+            | UnifiedIUR.Widgets.ContextMenu.t()
+            | UnifiedIUR.Widgets.Tabs.t()
+            | UnifiedIUR.Widgets.TreeView.t()
+            | UnifiedIUR.Layouts.VBox.t()
+            | UnifiedIUR.Layouts.HBox.t()
+            | [any()]
+            | nil
+
+    @type t :: %__MODULE__{
+            id: atom() | nil,
+            label: String.t() | nil,
+            icon: atom() | nil,
+            disabled: boolean(),
+            closable: boolean(),
+            visible: boolean(),
+            content: content()
+          }
+  end
+
+  defmodule Tabs do
+    @moduledoc """
+    Tabs container widget for grouping and switching tab content.
+    """
+
+    @type position :: :top | :bottom | :left | :right
+    @type signal :: atom() | {atom(), map()} | {atom(), atom(), list()}
+
+    defstruct [:id, :active_tab, :position, :on_change, :tabs, :style, visible: true]
+
+    @type t :: %__MODULE__{
+            id: atom() | nil,
+            active_tab: atom() | nil,
+            position: position() | nil,
+            on_change: signal() | nil,
+            tabs: [Tab.t()] | nil,
+            style: UnifiedIUR.Style.t() | nil,
+            visible: boolean()
+          }
+  end
+
+  defmodule TreeNode do
+    @moduledoc """
+    Tree node widget used inside tree views.
+    """
+
+    defstruct [
+      :id,
+      :label,
+      :value,
+      :icon,
+      :icon_expanded,
+      :children,
+      expanded: false,
+      selectable: true,
+      visible: true
+    ]
+
+    @type t :: %__MODULE__{
+            id: atom() | nil,
+            label: String.t() | nil,
+            value: any(),
+            expanded: boolean(),
+            icon: atom() | nil,
+            icon_expanded: atom() | nil,
+            selectable: boolean(),
+            visible: boolean(),
+            children: [t()] | nil
+          }
+  end
+
+  defmodule TreeView do
+    @moduledoc """
+    Tree view widget for hierarchical node display.
+    """
+
+    @type signal :: atom() | {atom(), map()} | {atom(), atom(), list()}
+    @type expanded_nodes :: :all | [atom()] | MapSet.t(atom()) | nil
+
+    defstruct [
+      :id,
+      :selected_node,
+      :expanded_nodes,
+      :on_select,
+      :on_toggle,
+      :root_nodes,
+      :style,
+      show_root: true,
+      visible: true
+    ]
+
+    @type t :: %__MODULE__{
+            id: atom() | nil,
+            selected_node: atom() | nil,
+            expanded_nodes: expanded_nodes(),
+            on_select: signal() | nil,
+            on_toggle: signal() | nil,
+            show_root: boolean(),
+            visible: boolean(),
+            style: UnifiedIUR.Style.t() | nil,
+            root_nodes: [TreeNode.t()] | nil
           }
   end
 end

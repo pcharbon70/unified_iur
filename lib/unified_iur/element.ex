@@ -304,6 +304,134 @@ defimpl UnifiedIUR.Element, for: UnifiedIUR.Widgets.Table do
   end
 end
 
+defimpl UnifiedIUR.Element, for: UnifiedIUR.Widgets.MenuItem do
+  def children(menu_item), do: menu_item.submenu || []
+
+  def metadata(menu_item) do
+    %{
+      type: :menu_item,
+      id: menu_item.id,
+      label: menu_item.label,
+      action: menu_item.action,
+      disabled: menu_item.disabled,
+      icon: menu_item.icon,
+      shortcut: menu_item.shortcut,
+      visible: menu_item.visible
+    }
+  end
+end
+
+defimpl UnifiedIUR.Element, for: UnifiedIUR.Widgets.Menu do
+  import UnifiedIUR.ElementHelpers
+
+  def children(menu), do: menu.items || []
+
+  def metadata(menu) do
+    %{
+      type: :menu,
+      id: menu.id,
+      title: menu.title,
+      position: menu.position,
+      visible: menu.visible
+    }
+    |> build_metadata(style: menu.style)
+  end
+end
+
+defimpl UnifiedIUR.Element, for: UnifiedIUR.Widgets.ContextMenu do
+  import UnifiedIUR.ElementHelpers
+
+  def children(menu), do: menu.items || []
+
+  def metadata(menu) do
+    %{
+      type: :context_menu,
+      id: menu.id,
+      trigger_on: menu.trigger_on,
+      visible: menu.visible
+    }
+    |> build_metadata(style: menu.style)
+  end
+end
+
+defimpl UnifiedIUR.Element, for: UnifiedIUR.Widgets.Tab do
+  def children(tab) do
+    case tab.content do
+      nil -> []
+      content when is_list(content) -> content
+      content -> [content]
+    end
+  end
+
+  def metadata(tab) do
+    %{
+      type: :tab,
+      id: tab.id,
+      label: tab.label,
+      icon: tab.icon,
+      disabled: tab.disabled,
+      closable: tab.closable,
+      visible: tab.visible
+    }
+  end
+end
+
+defimpl UnifiedIUR.Element, for: UnifiedIUR.Widgets.Tabs do
+  import UnifiedIUR.ElementHelpers
+
+  def children(tabs), do: tabs.tabs || []
+
+  def metadata(tabs) do
+    %{
+      type: :tabs,
+      id: tabs.id,
+      active_tab: tabs.active_tab,
+      position: tabs.position,
+      on_change: tabs.on_change,
+      visible: tabs.visible
+    }
+    |> build_metadata(style: tabs.style)
+  end
+end
+
+defimpl UnifiedIUR.Element, for: UnifiedIUR.Widgets.TreeNode do
+  def children(tree_node), do: tree_node.children || []
+
+  def metadata(tree_node) do
+    %{
+      type: :tree_node,
+      id: tree_node.id,
+      label: tree_node.label,
+      value: tree_node.value,
+      expanded: tree_node.expanded,
+      icon: tree_node.icon,
+      icon_expanded: tree_node.icon_expanded,
+      selectable: tree_node.selectable,
+      visible: tree_node.visible
+    }
+  end
+end
+
+defimpl UnifiedIUR.Element, for: UnifiedIUR.Widgets.TreeView do
+  import UnifiedIUR.ElementHelpers
+
+  def children(tree_view), do: tree_view.root_nodes || []
+
+  def metadata(tree_view) do
+    %{
+      type: :tree_view,
+      id: tree_view.id,
+      selected_node: tree_view.selected_node,
+      expanded_nodes: tree_view.expanded_nodes,
+      on_select: tree_view.on_select,
+      on_toggle: tree_view.on_toggle,
+      show_root: tree_view.show_root,
+      visible: tree_view.visible
+    }
+    |> build_metadata(style: tree_view.style)
+  end
+end
+
 defimpl UnifiedIUR.Element, for: Any do
   def children(_element), do: []
 
