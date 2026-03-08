@@ -25,6 +25,14 @@ defmodule UnifiedIUR.Widgets do
   * `Tabs` - Tabs container for switching content
   * `TreeNode` - Node in a hierarchical tree
   * `TreeView` - Hierarchical tree container
+  * `DialogButton` - Action button for dialog widgets
+  * `Dialog` - Modal dialog container
+  * `AlertDialog` - Alert dialog with severity and confirm/cancel handlers
+  * `Toast` - Transient notification widget
+  * `PickListOption` - Option entry used by pick list widgets
+  * `PickList` - Single-select input list
+  * `FormField` - Field descriptor for dynamic forms
+  * `FormBuilder` - Dynamic form widget
 
   ## Common Fields
 
@@ -628,6 +636,11 @@ defmodule UnifiedIUR.Widgets do
             | UnifiedIUR.Widgets.ContextMenu.t()
             | UnifiedIUR.Widgets.Tabs.t()
             | UnifiedIUR.Widgets.TreeView.t()
+            | UnifiedIUR.Widgets.Dialog.t()
+            | UnifiedIUR.Widgets.AlertDialog.t()
+            | UnifiedIUR.Widgets.Toast.t()
+            | UnifiedIUR.Widgets.PickList.t()
+            | UnifiedIUR.Widgets.FormBuilder.t()
             | UnifiedIUR.Layouts.VBox.t()
             | UnifiedIUR.Layouts.HBox.t()
             | [any()]
